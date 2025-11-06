@@ -1,0 +1,68 @@
+/* Import a mystical-looking font from Google Fonts */
+@import url('https.fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap');
+
+/* --- Main App Styling --- */
+body {
+    background-color: #1a1a2e; /* Dark purple/blue background */
+}
+
+/* Base app container */
+.stApp {
+    background: linear-gradient(to bottom, #0f0c29, #302b63, #24243e);
+    color: #e0e0e0; /* Light grey text */
+    font-family: 'Cinzel', serif; /* Apply the mystical font */
+}
+
+/* --- Titles and Headers --- */
+h1, h2, h3 {
+    color: #ffd700; /* Gold color for headers */
+    text-shadow: 2px 2px 4px #000000;
+}
+
+/* --- Widgets --- */
+.stTextInput input, .stButton button {
+    border-radius: 8px;
+    border: 1px solid #ffd700;
+    color: #1a1a2e;
+}
+
+.stButton button {
+    background-color: #ffd700; /* Gold button */
+    color: #1a1a2e; /* Dark text */
+    font-weight: bold;
+    font-family: 'Cinzel', serif;
+}
+.stButton button:hover {
+    background-color: #e6c300;
+    border: 1px solid #fff;
+    color: #000;
+}
+
+/* --- Card Animation --- */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.card-container {
+    padding: 10px;
+    border-radius: 10px;
+    background-color: rgba(255, 255, 255, 0.05); /* Faintly visible card bg */
+    border: 1px solid #ffd700;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+    
+    /* Apply the animation */
+    animation: fadeIn 1s ease-out;
+}
+
+/* --- Image Styling --- */
+.stImage img {
+    border-radius: 8px;
+    border: 2px solid #ffd700; /* Gold border on images */
+}
