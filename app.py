@@ -317,7 +317,7 @@ def generate_deep_dive(reading_name, question, cards):
         f"In your present situation, the **{present_card['name']} ({present_card['orientation']})** indicates a focus on: *{present_card['meaning']}*. "
         f"This combination of past influences and present energy directs the current flow towards the future, "
         f"where the **{future_card['name']} ({future_card['orientation']})** suggests a likely outcome of: *{future_card['meaning']}*. "
-        "Focus on the balance of the **{past_card['suit']}**, **{present_card['suit']}**, and **{future_card['suit']}** energies to find your path forward."
+        "Focus on the balance of the past card, present card, and future card energies to find your path forward."
     )
     st.info(interpretation)
 
