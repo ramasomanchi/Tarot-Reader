@@ -1,38 +1,23 @@
-/* Import a mystical-looking font from Google Fonts */
 @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap');
 
-/* --- Global Color Override for Visibility --- */
-/* Set the primary background and force light text on the entire app */
+/* --- Global App and Text Styling --- */
 .stApp {
     background: linear-gradient(to bottom, #0f0c29, #302b63, #24243e);
-    color: #e0e0e0; /* <-- Explicitly set light text color for visibility */
+    color: #e0e0e0; 
     font-family: 'Cinzel', serif;
 }
 
-/* --- Titles and Headers --- */
 h1, h2, h3 {
-    color: #ffd700; /* Gold color for headers */
+    color: #ffd700; 
     text-shadow: 2px 2px 4px #000000;
 }
 
+/* Ensure all interactive text is visible */
+.stTextInput label, .stMarkdown, .stSelectbox label {
+    color: #e0e0e0 !important;
+}
+
 /* --- Widgets --- */
-.stTextInput label, .stMarkdown {
-    color: #e0e0e0 !important; /* Ensure all labels and markdown text is light */
-}
-
-.stTextInput input {
-    border-radius: 8px;
-    border: 1px solid #ffd700;
-    color: #ffffff; 
-    background-color: #24243e; 
-    font-family: 'Cinzel', serif;
-}
-
-/* Change placeholder text color to be visible */
-.stTextInput input::placeholder {
-  color: #888 !important;
-}
-
 .stButton button {
     background-color: #ffd700; 
     color: #1a1a2e; 
@@ -47,37 +32,11 @@ h1, h2, h3 {
     box-shadow: 0 0 10px #e6c300;
 }
 
-/* --- Card Selection Interface Styling --- */
-/* Style for the visual deck that users click on */
-.deck-card {
-    cursor: pointer;
-    border: 3px solid #ffd700;
-    border-radius: 12px;
-    box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
-    transition: transform 0.2s, box-shadow 0.2s;
-    background-color: #302b63; /* Card back color */
-    padding: 20px;
-    height: 100%;
-}
-.deck-card:hover {
-    transform: scale(1.05);
-    box-shadow: 0 0 25px #ffd700;
-}
-.card-slot {
-    min-height: 400px; /* Ensure space for the revealed card */
-    text-align: center;
-}
 
-/* --- Revealed Card Animation and Layout --- */
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+/* --- Card Slot and Container --- */
+.card-slot {
+    min-height: 400px; 
+    text-align: center;
 }
 
 .card-container {
@@ -88,11 +47,71 @@ h1, h2, h3 {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
     height: 100%;
     text-align: center;
-    animation: fadeIn 1s ease-out;
 }
 
-.stImage img {
-    border-radius: 8px;
-    border: 2px solid #ffd700;
+/* --- Generated Card Face Styling --- */
+.generated-card-face {
+    margin: 10px auto;
+    border-radius: 12px;
+    border: 3px solid white;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.7);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 5px;
+    transition: transform 0.5s ease-in-out; 
+}
+
+/* REVERSED CARD ROTATION */
+.card-reversed {
+    transform: rotate(180deg);
+}
+
+.card-title-top, .card-title-bottom {
+    font-size: 1.5rem;
+    font-weight: bold;
+    font-family: Arial, sans-serif;
+    color: #000; 
+}
+
+.card-suit-center {
+    font-size: 4rem;
+    line-height: 1;
+    flex-grow: 1; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.card-name {
+    font-size: 1.1rem;
+    font-weight: bold;
+    text-align: center;
+    color: #000;
+    padding: 5px 0;
+}
+
+/* Suit-specific colors */
+.major { background-color: #f7e098; border-color: #ffd700; } /* Gold/Yellow for Major */
+.wands { background-color: #ff9999; border-color: #cc0000; } /* Red/Orange for Wands */
+.cups { background-color: #99ccff; border-color: #0066cc; } /* Blue for Cups */
+.swords { background-color: #cccccc; border-color: #666666; } /* Gray for Swords */
+.pentacles { background-color: #99ff99; border-color: #00cc00; } /* Green for Pentacles */
+
+
+/* --- Card Back Placeholder Styling --- */
+.card-back-placeholder {
+    width: 200px;
+    height: 350px;
+    margin: 10px auto;
+    border-radius: 12px;
+    border: 3px solid #ffd700;
+    background-color: #302b63; /* Dark purple */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 8rem; 
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.7);
+    cursor: pointer;
 }
