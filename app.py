@@ -5,12 +5,18 @@ import time
 # --- Setup and Initialization ---
 
 # Define the base URL for your images (UPDATE THIS)
-# IMPORTANT: Replace 'coder123', 'tarot-app', and 'images' with your actual path
+# IMPORTANT: Replace 'coder123', 'tarot-app', and 'images' with your actual GitHub path
 BASE_URL = "https://raw.githubusercontent.com/coder123/tarot-app/main/images"
 
-# --- Full 78-Card Tarot Deck (using BASE_URL for easy image replacement) ---
-# NOTE: The image URLs below use the BASE_URL and a filename. 
-# Ensure your file names (e.g., 'the_fool.jpg') match exactly.
+# --- Page Configuration (Must be the first Streamlit command) ---
+st.set_page_config(
+    page_title="Mystic's Gate Tarot", 
+    page_icon="🔮",
+    layout="wide"
+)
+
+# --- Full 78-Card Tarot Deck Structure ---
+# NOTE: Ensure your image file names (e.g., 'the_fool.jpg') exist in your GitHub 'images' folder.
 
 TAROT_DECK = [
     # Major Arcana
@@ -112,7 +118,7 @@ def load_css(file_name):
     except FileNotFoundError:
         st.warning(f"{file_name} file not found. App will run with default styling.")
 
-# --- Session State Management ---
+# --- Session State Management Initialization ---
 if 'reading_active' not in st.session_state:
     st.session_state.reading_active = False
 if 'drawn_cards' not in st.session_state:
@@ -125,7 +131,7 @@ if 'deck_remaining' not in st.session_state:
 if 'pick_count' not in st.session_state:
     st.session_state.pick_count = 0
 
-# --- Functions ---
+# --- State Functions ---
 
 def start_reading():
     """Initializes a new reading session."""
@@ -141,7 +147,7 @@ def start_reading():
         st.warning("Please enter your name and question to begin.")
 
 def pick_card():
-    """Picks a random card from the remaining deck."""
+    """Picks the next card from the top of the remaining deck."""
     if st.session_state.deck_remaining:
         # Get the next card from the top of the shuffled deck
         card = st.session_state.deck_remaining.pop(0) 
@@ -156,8 +162,8 @@ def reset_reading():
     st.session_state.drawn_cards = []
     st.session_state.deck_remaining = []
     st.session_state.pick_count = 0
-    # Force a full Rerun to clear input fields
-    st.experimental_rerun()
+    # Force a full Rerun to clear input fields (FIXED: using st.rerun())
+    st.rerun() 
 
 
 # --- Main App Logic ---
@@ -166,11 +172,15 @@ def run_tarot_app():
     st.markdown("---")
     
     # 1. Input Section
-    st.session_state.name = st.text_input("What is your name?")
-    st.session_state.question = st.text_input("What question do you ask of the cards?")
+    # Check if inputs are initialized before accessing
+    if 'name' not in st.session_state: st.session_state.name = ""
+    if 'question' not in st.session_state: st.session_state.question = ""
+
+    st.session_state.name = st.text_input("What is your name?", value=st.session_state.name, key="name_input")
+    st.session_state.question = st.text_input("What question do you ask of the cards?", value=st.session_state.question, key="question_input")
     
     # 2. Start Button
-    if st.button("Shuffle and Start Reading", disabled=st.session_state.reading_active):
+    if st.button("Shuffle and Start Reading", disabled=st.session_state.reading_active, key="start_btn"):
         start_reading()
 
     # --- Interactive Reading Flow ---
@@ -178,8 +188,11 @@ def run_tarot_app():
         st.markdown(f"---")
         st.subheader(f"{st.session_state.name}, let your intuition guide you...")
         st.markdown(f"**Question:** *{st.session_state.question}*")
-        st.markdown(f"Click a card below to select **Card {st.session_state.pick_count + 1} of 3**.")
-
+        
+        # Check if the reading is complete
+        if st.session_state.pick_count < 3:
+            st.markdown(f"Click the card below to select **Card {st.session_state.pick_count + 1} of 3**.")
+        
         # Card Selection Display (The interactive part)
         card_labels = ["Your Past (Card 1)", "Your Present (Card 2)", "Your Future (Card 3)"]
         
@@ -194,30 +207,26 @@ def run_tarot_app():
                     card = st.session_state.drawn_cards[i]
                     st.markdown(f"<p style='color:#ffd700; font-weight:bold;'>{card_labels[i]}</p>", unsafe_allow_html=True)
                     st.markdown(f'<div class="card-container">', unsafe_allow_html=True)
-                    # Note: We use a generic image for the card back here, but st.image can handle a URL
+                    # We use a slight delay for visual drama on reveal
+                    time.sleep(0.05) 
                     st.image(card["image_url"], caption=card["name"], use_column_width=True)
                     st.markdown(f"**Meaning:** {card['meaning']}")
                     st.markdown('</div>', unsafe_allow_html=True)
                 
-                elif i == st.session_state.pick_count:
+                elif i == st.session_state.pick_count and st.session_state.pick_count < 3:
                     # Current card to be picked - Show interactive card back
                     st.markdown(f"<p style='color:#ffd700; font-weight:bold;'>{card_labels[i]}</p>", unsafe_allow_html=True)
                     
-                    # This is a trick to display a clickable card back image using a button
-                    # You should replace the URL below with a nice image of a card back.
-                    card_back_url = f"{BASE_URL}/card_back.jpg" # Assume you have a generic card_back image
-                    st.markdown(
-                        f"""
-                        <a href="#" onclick="document.getElementById('pick-btn').click(); return false;">
-                            <img src="{card_back_url}" style="width:100%; height:auto; border-radius:12px; border: 3px solid #ffd700; cursor:pointer;" title="Click to Pick Card {i+1}">
-                        </a>
-                        """,
-                        unsafe_allow_html=True
-                    )
-                    # The hidden button that handles the actual Streamlit action
-                    if st.button("Pick Card", key="pick-btn", use_container_width=True):
+                    # You MUST have a 'card_back.jpg' image in your GitHub 'images' folder
+                    card_back_url = f"{BASE_URL}/card_back.jpg" 
+                    
+                    # Streamlit trick: Use a button to handle the click action
+                    if st.button(f"Pick Card {i+1}", key="pick-btn-action", use_container_width=True):
                         pick_card()
-                        st.experimental_rerun() # Rerun to update the state and show the picked card
+                        st.rerun() # FIXED: using st.rerun() to update the display
+                        
+                    st.image(card_back_url, caption="Click button to reveal", use_column_width=True)
+
                 else:
                     # Card slot is empty - show placeholder
                     st.markdown(f"<p style='color:#888;'>{card_labels[i]}</p>", unsafe_allow_html=True)
