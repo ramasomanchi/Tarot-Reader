@@ -4,9 +4,8 @@ import time
 
 # --- Setup and Initialization ---
 
-# Define the base URL for your images (UPDATE THIS)
-# IMPORTANT: Replace 'coder123', 'tarot-app', and 'images' with your actual GitHub path
-BASE_URL = "https://raw.githubusercontent.com/coder123/tarot-app/main/images"
+# Card Back Emojis/Symbols (Used when card is face down)
+CARD_BACK_SYMBOL = "🔮" 
 
 # --- Page Configuration (Must be the first Streamlit command) ---
 st.set_page_config(
@@ -15,101 +14,185 @@ st.set_page_config(
     layout="wide"
 )
 
+# --- Helper Function to Create Card Data ---
+def create_card_data(name, suit, value, meaning_upright, meaning_reversed):
+    """Creates a dictionary for a tarot card with both upright and reversed meanings, using suit/value for rendering."""
+    return {
+        "name": name,
+        "suit": suit,
+        "value": value,
+        "meaning_upright": meaning_upright,
+        "meaning_reversed": meaning_reversed
+    }
+
 # --- Full 78-Card Tarot Deck Structure ---
-# NOTE: Ensure your image file names (e.g., 'the_fool.jpg') exist in your GitHub 'images' folder.
-
 TAROT_DECK = [
-    # Major Arcana
-    {"name": "The Fool", "meaning": "New beginnings, innocence, spontaneity.", "image_url": f"{BASE_URL}/the_fool.jpg"},
-    {"name": "The Magician", "meaning": "Manifestation, resourcefulness, power.", "image_url": f"{BASE_URL}/the_magician.jpg"},
-    {"name": "The High Priestess", "meaning": "Intuition, sacred knowledge, the subconscious.", "image_url": f"{BASE_URL}/the_high_priestess.jpg"},
-    {"name": "The Empress", "meaning": "Femininity, beauty, nature, nurturing.", "image_url": f"{BASE_URL}/the_empress.jpg"},
-    {"name": "The Emperor", "meaning": "Authority, structure, control, fatherhood.", "image_url": f"{BASE_URL}/the_emperor.jpg"},
-    {"name": "The Hierophant", "meaning": "Tradition, conformity, morality, ethics.", "image_url": f"{BASE_URL}/the_hierophant.jpg"},
-    {"name": "The Lovers", "meaning": "Love, harmony, relationships, choices.", "image_url": f"{BASE_URL}/the_lovers.jpg"},
-    {"name": "The Chariot", "meaning": "Control, willpower, assertion, determination.", "image_url": f"{BASE_URL}/the_chariot.jpg"},
-    {"name": "Strength", "meaning": "Courage, persuasion, influence, compassion.", "image_url": f"{BASE_URL}/strength.jpg"},
-    {"name": "The Hermit", "meaning": "Introspection, solitude, inner guidance.", "image_url": f"{BASE_URL}/the_hermit.jpg"},
-    {"name": "Wheel of Fortune", "meaning": "Luck, karma, life cycles, destiny.", "image_url": f"{BASE_URL}/wheel_of_fortune.jpg"},
-    {"name": "Justice", "meaning": "Justice, fairness, truth, cause and effect.", "image_url": f"{BASE_URL}/justice.jpg"},
-    {"name": "The Hanged Man", "meaning": "Suspension, restriction, letting go, sacrifice.", "image_url": f"{BASE_URL}/the_hanged_man.jpg"},
-    {"name": "Death", "meaning": "Endings, beginnings, change, transformation.", "image_url": f"{BASE_URL}/death.jpg"},
-    {"name": "Temperance", "meaning": "Balance, moderation, patience, purpose.", "image_url": f"{BASE_URL}/temperance.jpg"},
-    {"name": "The Devil", "meaning": "Bondage, addiction, materialism, temptation.", "image_url": f"{BASE_URL}/the_devil.jpg"},
-    {"name": "The Tower", "meaning": "Sudden change, upheaval, chaos, revelation.", "image_url": f"{BASE_URL}/the_tower.jpg"},
-    {"name": "The Star", "meaning": "Hope, faith, purpose, rejuvenation.", "image_url": f"{BASE_URL}/the_star.jpg"},
-    {"name": "The Moon", "meaning": "Illusion, fear, anxiety, subconscious.", "image_url": f"{BASE_URL}/the_moon.jpg"},
-    {"name": "The Sun", "meaning": "Positivity, warmth, success, vitality.", "image_url": f"{BASE_URL}/the_sun.jpg"},
-    {"name": "Judgement", "meaning": "Rebirth, inner calling, absolution.", "image_url": f"{BASE_URL}/judgement.jpg"},
-    {"name": "The World", "meaning": "Completion, integration, accomplishment.", "image_url": f"{BASE_URL}/the_world.jpg"},
-    
-    # Suit of Wands
-    {"name": "Ace of Wands", "meaning": "Inspiration, new opportunities, growth.", "image_url": f"{BASE_URL}/ace_of_wands.jpg"},
-    {"name": "Two of Wands", "meaning": "Future planning, decisions, discovery.", "image_url": f"{BASE_URL}/two_of_wands.jpg"},
-    {"name": "Three of Wands", "meaning": "Expansion, foresight, overseas opportunities.", "image_url": f"{BASE_URL}/three_of_wands.jpg"},
-    {"name": "Four of Wands", "meaning": "Celebration, harmony, marriage, community.", "image_url": f"{BASE_URL}/four_of_wands.jpg"},
-    {"name": "Five of Wands", "meaning": "Conflict, competition, disagreements.", "image_url": f"{BASE_URL}/five_of_wands.jpg"},
-    {"name": "Six of Wands", "meaning": "Public recognition, victory, success.", "image_url": f"{BASE_URL}/six_of_wands.jpg"},
-    {"name": "Seven of Wands", "meaning": "Challenge, protection, perseverance.", "image_url": f"{BASE_URL}/seven_of_wands.jpg"},
-    {"name": "Eight of Wands", "meaning": "Speed, action, air travel, movement.", "image_url": f"{BASE_URL}/eight_of_wands.jpg"},
-    {"name": "Nine of Wands", "meaning": "Resilience, courage, persistence, boundaries.", "image_url": f"{BASE_URL}/nine_of_wands.jpg"},
-    {"name": "Ten of Wands", "meaning": "Burden, extra responsibility, hard work.", "image_url": f"{BASE_URL}/ten_of_wands.jpg"},
-    {"name": "Page of Wands", "meaning": "Enthusiasm, exploration, creative spark.", "image_url": f"{BASE_URL}/page_of_wands.jpg"},
-    {"name": "Knight of Wands", "meaning": "Energy, passion, adventure, impulsiveness.", "image_url": f"{BASE_URL}/knight_of_wands.jpg"},
-    {"name": "Queen of Wands", "meaning": "Courage, confidence, determination, warmth.", "image_url": f"{BASE_URL}/queen_of_wands.jpg"},
-    {"name": "King of Wands", "meaning": "Natural-born leader, vision, entrepreneurship.", "image_url": f"{BASE_URL}/king_of_wands.jpg"},
-    
-    # Suit of Cups
-    {"name": "Ace of Cups", "meaning": "New love, compassion, creativity, emotion.", "image_url": f"{BASE_URL}/ace_of_cups.jpg"},
-    {"name": "Two of Cups", "meaning": "Unified love, partnership, mutual attraction.", "image_url": f"{BASE_URL}/two_of_cups.jpg"},
-    {"name": "Three of Cups", "meaning": "Celebration, friendship, community.", "image_url": f"{BASE_URL}/three_of_cups.jpg"},
-    {"name": "Four of Cups", "meaning": "Apathy, contemplation, disconnectedness.", "image_url": f"{BASE_URL}/four_of_cups.jpg"},
-    {"name": "Five of Cups", "meaning": "Loss, regret, disappointment, grief.", "image_url": f"{BASE_URL}/five_of_cups.jpg"},
-    {"name": "Six of Cups", "meaning": "Nostalgia, childhood memories, reunion.", "image_url": f"{BASE_URL}/six_of_cups.jpg"},
-    {"name": "Seven of Cups", "meaning": "Choices, illusions, fantasy, wishful thinking.", "image_url": f"{BASE_URL}/seven_of_cups.jpg"},
-    {"name": "Eight of Cups", "meaning": "Walking away, disillusionment, withdrawal.", "image_url": f"{BASE_URL}/eight_of_cups.jpg"},
-    {"name": "Nine of Cups", "meaning": "Wish fulfillment, comfort, happiness.", "image_url": f"{BASE_URL}/nine_of_cups.jpg"},
-    {"name": "Ten of Cups", "meaning": "Divine love, harmonious relationships, family.", "image_url": f"{BASE_URL}/ten_of_cups.jpg"},
-    {"name": "Page of Cups", "meaning": "Creative opportunities, intuition, messages of love.", "image_url": f"{BASE_URL}/page_of_cups.jpg"},
-    {"name": "Knight of Cups", "meaning": "Romance, charm, 'knight in shining armor'.", "image_url": f"{BASE_URL}/knight_of_cups.jpg"},
-    {"name": "Queen of Cups", "meaning": "Compassion, intuition, emotional stability.", "image_url": f"{BASE_URL}/queen_of_cups.jpg"},
-    {"name": "King of Cups", "meaning": "Emotional balance, diplomacy, generosity.", "image_url": f"{BASE_URL}/king_of_cups.jpg"},
-    
-    # Suit of Swords
-    {"name": "Ace of Swords", "meaning": "Breakthroughs, mental clarity, success.", "image_url": f"{BASE_URL}/ace_of_swords.jpg"},
-    {"name": "Two of Swords", "meaning": "Stalemate, difficult decisions, avoidance.", "image_url": f"{BASE_URL}/two_of_swords.jpg"},
-    {"name": "Three of Swords", "meaning": "Heartbreak, emotional pain, sorrow.", "image_url": f"{BASE_URL}/three_of_swords.jpg"},
-    {"name": "Four of Swords", "meaning": "Rest, contemplation, meditation, recuperation.", "image_url": f"{BASE_URL}/four_of_swords.jpg"},
-    {"name": "Five of Swords", "meaning": "Conflict, competition, defeat, betrayal.", "image_url": f"{BASE_URL}/five_of_swords.jpg"},
-    {"name": "Six of Swords", "meaning": "Transition, moving on, passage.", "image_url": f"{BASE_URL}/six_of_swords.jpg"},
-    {"name": "Seven of Swords", "meaning": "Deception, strategy, stealth, betrayal.", "image_url": f"{BASE_URL}/seven_of_swords.jpg"},
-    {"name": "Eight of Swords", "meaning": "Self-imposed restriction, limitation, feeling trapped.", "image_url": f"{BASE_URL}/eight_of_swords.jpg"},
-    {"name": "Nine of Swords", "meaning": "Anxiety, nightmares, fear, despair.", "image_url": f"{BASE_URL}/nine_of_swords.jpg"},
-    {"name": "Ten of Swords", "meaning": "Painful endings, rock bottom, betrayal.", "image_url": f"{BASE_URL}/ten_of_swords.jpg"},
-    {"name": "Page of Swords", "meaning": "Curiosity, thirst for knowledge, new ideas.", "image_url": f"{BASE_URL}/page_of_swords.jpg"},
-    {"name": "Knight of Swords", "meaning": "Ambitious, action-oriented, fast-thinking.", "image_url": f"{BASE_URL}/knight_of_swords.jpg"},
-    {"name": "Queen of Swords", "meaning": "Independent, unbiased judgement, clear boundaries.", "image_url": f"{BASE_URL}/queen_of_swords.jpg"},
-    {"name": "King of Swords", "meaning": "Mental clarity, intellectual power, authority.", "image_url": f"{BASE_URL}/king_of_swords.jpg"},
+    # --- Major Arcana (22 Cards) ---
+    create_card_data("The Fool", "Major Arcana", "0", 
+        "New beginnings, innocence, spontaneity, a leap of faith.", 
+        "Recklessness, being taken advantage of, fear of change, poor judgement."
+    ),
+    create_card_data("The Magician", "Major Arcana", "I", 
+        "Manifestation, resourcefulness, power, inspired action.", 
+        "Manipulation, poor planning, dormant talents, deception."
+    ),
+    create_card_data("The High Priestess", "Major Arcana", "II", 
+        "Intuition, sacred knowledge, the subconscious, divine feminine.", 
+        "Secrets, repressed intuition, withdrawal, confusion, silence."
+    ),
+    create_card_data("The Empress", "Major Arcana", "III", 
+        "Femininity, beauty, nature, nurturing, abundance.", 
+        "Creative block, dependence on others, smothering, barrenness."
+    ),
+    create_card_data("The Emperor", "Major Arcana", "IV", 
+        "Authority, structure, control, fatherhood, leadership.", 
+        "Tyranny, rigidity, domination, excessive control, lack of discipline."
+    ),
+    create_card_data("The Hierophant", "Major Arcana", "V", 
+        "Tradition, conformity, morality, ethics, spiritual wisdom.", 
+        "Rebellion, non-conformity, new approaches, restriction."
+    ),
+    create_card_data("The Lovers", "Major Arcana", "VI", 
+        "Love, harmony, relationships, choices, union.", 
+        "Disharmony, imbalance, misalignment of values, avoidance of commitment."
+    ),
+    create_card_data("The Chariot", "Major Arcana", "VII", 
+        "Control, willpower, assertion, determination, victory.", 
+        "Lack of control, opposition, lack of direction, self-defeat."
+    ),
+    create_card_data("Strength", "Major Arcana", "VIII", 
+        "Courage, persuasion, influence, compassion, inner strength.", 
+        "Self-doubt, weakness, lack of control, raw emotion."
+    ),
+    create_card_data("The Hermit", "Major Arcana", "IX", 
+        "Introspection, solitude, inner guidance, searching for truth.", 
+        "Isolation, loneliness, withdrawal, misguided guidance."
+    ),
+    create_card_data("Wheel of Fortune", "Major Arcana", "X", 
+        "Luck, karma, life cycles, destiny, change.", 
+        "Bad luck, disruption, out of control, setbacks."
+    ),
+    create_card_data("Justice", "Major Arcana", "XI", 
+        "Justice, fairness, truth, cause and effect, legal matters.", 
+        "Unfairness, lack of accountability, legal complications, bias."
+    ),
+    create_card_data("The Hanged Man", "Major Arcana", "XII", 
+        "Suspension, restriction, letting go, sacrifice, new perspective.", 
+        "Stalling, resistance, martyrdom, inability to move on."
+    ),
+    create_card_data("Death", "Major Arcana", "XIII", 
+        "Endings, beginnings, change, transformation, transition.", 
+        "Resistance to change, stagnation, fear of the inevitable."
+    ),
+    create_card_data("Temperance", "Major Arcana", "XIV", 
+        "Balance, moderation, patience, purpose, harmony.", 
+        "Imbalance, excess, conflicting interests, lack of self-control."
+    ),
+    create_card_data("The Devil", "Major Arcana", "XV", 
+        "Bondage, addiction, materialism, temptation, shadow self.", 
+        "Releasing chains, breaking free, overcoming addiction, freedom."
+    ),
+    create_card_data("The Tower", "Major Arcana", "XVI", 
+        "Sudden change, upheaval, chaos, revelation, destruction.", 
+        "Fear of disaster, averting disaster, delaying the inevitable."
+    ),
+    create_card_data("The Star", "Major Arcana", "XVII", 
+        "Hope, faith, purpose, rejuvenation, inspiration.", 
+        "Hopelessness, despair, lack of inspiration, feeling lost."
+    ),
+    create_card_data("The Moon", "Major Arcana", "XVIII", 
+        "Illusion, fear, anxiety, subconscious, intuition.", 
+        "Release of fear, clarity, finding the truth, confusion."
+    ),
+    create_card_data("The Sun", "Major Arcana", "XIX", 
+        "Positivity, warmth, success, vitality, joy.", 
+        "Lack of enthusiasm, temporary unhappiness, clouded vision."
+    ),
+    create_card_data("Judgement", "Major Arcana", "XX", 
+        "Rebirth, inner calling, absolution, assessment.", 
+        "Self-doubt, refusal to self-evaluate, procrastination, feeling judged."
+    ),
+    create_card_data("The World", "Major Arcana", "XXI", 
+        "Completion, integration, accomplishment, travel, fulfillment.", 
+        "Lack of completion, short-cuts, delay, unfulfilled potential."
+    ),
 
-    # Suit of Pentacles
-    {"name": "Ace of Pentacles", "meaning": "New financial opportunity, manifestation.", "image_url": f"{BASE_URL}/ace_of_pentacles.jpg"},
-    {"name": "Two of Pentacles", "meaning": "Balancing priorities, adaptability.", "image_url": f"{BASE_URL}/two_of_pentacles.jpg"},
-    {"name": "Three of Pentacles", "meaning": "Teamwork, collaboration, skilled craft.", "image_url": f"{BASE_URL}/three_of_pentacles.jpg"},
-    {"name": "Four of Pentacles", "meaning": "Security, conservation, possessiveness.", "image_url": f"{BASE_URL}/four_of_pentacles.jpg"},
-    {"name": "Five of Pentacles", "meaning": "Financial loss, poverty, isolation.", "image_url": f"{BASE_URL}/five_of_pentacles.jpg"},
-    {"name": "Six of Pentacles", "meaning": "Generosity, charity, giving and receiving.", "image_url": f"{BASE_URL}/six_of_pentacles.jpg"},
-    {"name": "Seven of Pentacles", "meaning": "Patience, investment, long-term vision.", "image_url": f"{BASE_URL}/seven_of_pentacles.jpg"},
-    {"name": "Eight of Pentacles", "meaning": "Apprenticeship, skill development, mastery.", "image_url": f"{BASE_URL}/eight_of_pentacles.jpg"},
-    {"name": "Nine of Pentacles", "meaning": "Abundance, luxury, self-sufficiency.", "image_url": f"{BASE_URL}/nine_of_pentacles.jpg"},
-    {"name": "Ten of Pentacles", "meaning": "Wealth, family legacy, financial security.", "image_url": f"{BASE_URL}/ten_of_pentacles.jpg"},
-    {"name": "Page of Pentacles", "meaning": "Manifestation, financial opportunity, skill.", "image_url": f"{BASE_URL}/page_of_pentacles.jpg"},
-    {"name": "Knight of Pentacles", "meaning": "Hard work, routine, diligence, reliability.", "image_url": f"{BASE_URL}/knight_of_pentacles.jpg"},
-    {"name": "Queen of Pentacles", "meaning": "Nurturing, practical, financially stable.", "image_url": f"{BASE_URL}/queen_of_pentacles.jpg"},
-    {"name": "King of Pentacles", "meaning": "Wealth, business, leadership, security.", "image_url": f"{BASE_URL}/king_of_pentacles.jpg"}
+    # --- Suit of Wands (14 Cards) ---
+    create_card_data("Ace of Wands", "Wands", "Ace", "Inspiration, new opportunities, growth.", "Lack of motivation, feeling burned out, delayed projects."),
+    create_card_data("Two of Wands", "Wands", "2", "Future planning, decisions, discovery.", "Fear of the unknown, lack of confidence, lack of planning."),
+    create_card_data("Three of Wands", "Wands", "3", "Expansion, foresight, overseas opportunities.", "Obstacles, delays, feeling let down, miscommunication."),
+    create_card_data("Four of Wands", "Wands", "4", "Celebration, harmony, home, marriage.", "Instability, transition, lack of support, broken promises."),
+    create_card_data("Five of Wands", "Wands", "5", "Conflict, competition, disagreements.", "Avoidance of conflict, tension, finding peace, fear of losing."),
+    create_card_data("Six of Wands", "Wands", "6", "Public recognition, victory, success.", "Egotism, public shame, fall from grace, lack of recognition."),
+    create_card_data("Seven of Wands", "Wands", "7", "Challenge, protection, perseverance.", "Giving up, feeling overwhelmed, yielding to pressure."),
+    create_card_data("Eight of Wands", "Wands", "8", "Speed, action, air travel, movement.", "Delays, resisting change, slow progress, frustration."),
+    create_card_data("Nine of Wands", "Wands", "9", "Resilience, courage, persistence.", "Defensiveness, paranoia, burden, walls coming down."),
+    create_card_data("Ten of Wands", "Wands", "10", "Burden, extra responsibility, hard work.", "Avoiding responsibility, carrying too much, release of burden."),
+    create_card_data("Page of Wands", "Wands", "Page", "Enthusiasm, exploration, creative spark.", "Lack of enthusiasm, poor news, creative block, pessimism."),
+    create_card_data("Knight of Wands", "Wands", "Knight", "Energy, passion, adventure, impulsiveness.", "Impetuosity, haste, recklessness, feeling stuck."),
+    create_card_data("Queen of Wands", "Wands", "Queen", "Courage, confidence, determination, warmth.", "Selfishness, demanding, temperamental, lack of focus."),
+    create_card_data("King of Wands", "Wands", "King", "Natural-born leader, vision, entrepreneurship.", "Ruthlessness, tyrannical, power-hungry, unrealistic expectations."),
+
+    # --- Suit of Cups (14 Cards) ---
+    create_card_data("Ace of Cups", "Cups", "Ace", "New love, compassion, creativity, emotion.", "Repressed emotions, emotional turmoil, emptiness, unrequited love."),
+    create_card_data("Two of Cups", "Cups", "2", "Unified love, partnership, mutual attraction.", "Break-up, conflict, imbalance in a relationship, separation."),
+    create_card_data("Three of Cups", "Cups", "3", "Celebration, friendship, community, joy.", "Gossip, overindulgence, isolation, betrayal of trust."),
+    create_card_data("Four of Cups", "Cups", "4", "Apathy, contemplation, disconnectedness.", "Clarity, realization, choosing happiness, new opportunities."),
+    create_card_data("Five of Cups", "Cups", "5", "Loss, regret, disappointment, grief.", "Acceptance, moving on, recovery, finding hope."),
+    create_card_data("Six of Cups", "Cups", "6", "Nostalgia, childhood memories, reunion.", "Living in the past, stagnation, immaturity, missed opportunity."),
+    create_card_data("Seven of Cups", "Cups", "7", "Choices, illusions, fantasy, wishful thinking.", "Clarity of purpose, groundedness, decisive action."),
+    create_card_data("Eight of Cups", "Cups", "8", "Walking away, disillusionment, withdrawal.", "Avoidance of necessary departure, fear of change, stagnation."),
+    create_card_data("Nine of Cups", "Cups", "9", "Wish fulfillment, comfort, happiness.", "Greed, materialism, dissatisfaction, ill-health."),
+    create_card_data("Ten of Cups", "Cups", "10", "Divine love, harmonious relationships, family.", "Broken family, divorce, emotional isolation, lack of inner peace."),
+    create_card_data("Page of Cups", "Cups", "Page", "Creative opportunities, intuition, messages of love.", "Emotional immaturity, bad news, creative block, shyness."),
+    create_card_data("Knight of Cups", "Cups", "Knight", "Romance, charm, 'knight in shining armor'.", "Moodiness, disappointment, jealousy, coldness, illusion."),
+    create_card_data("Queen of Cups", "Cups", "Queen", "Compassion, intuition, emotional stability.", "Emotional martyrdom, insecurity, manipulation, emotional overload."),
+    create_card_data("King of Cups", "Cups", "King", "Emotional balance, diplomacy, generosity.", "Emotional manipulation, secrecy, mood swings, dishonesty."),
+
+    # --- Suit of Swords (14 Cards) ---
+    create_card_data("Ace of Swords", "Swords", "Ace", "Breakthroughs, mental clarity, success.", "Confusion, lack of focus, destructive force, intellectual poverty."),
+    create_card_data("Two of Swords", "Swords", "2", "Stalemate, difficult decisions, avoidance.", "Release, clarity, choosing a side, indecision."),
+    create_card_data("Three of Swords", "Swords", "3", "Heartbreak, emotional pain, sorrow, betrayal.", "Forgiveness, recovery, finding hope, moving past the pain."),
+    create_card_data("Four of Swords", "Swords", "4", "Rest, contemplation, meditation, recuperation.", "Restlessness, burnout, slow recovery, lack of inner peace."),
+    create_card_data("Five of Swords", "Swords", "5", "Conflict, competition, defeat, betrayal.", "Reconciliation, resolution, moving on, loss of face."),
+    create_card_data("Six of Swords", "Swords", "6", "Transition, moving on, passage, travel.", "Stuck in the past, resistance to change, emotional baggage."),
+    create_card_data("Seven of Swords", "Swords", "7", "Deception, strategy, stealth, betrayal.", "Coming clean, integrity, confession, admitting failure."),
+    create_card_data("Eight of Swords", "Swords", "8", "Self-imposed restriction, limitation, feeling trapped.", "Freedom, release, new perspective, finding a way out."),
+    create_card_data("Nine of Swords", "Swords", "9", "Anxiety, nightmares, fear, despair.", "Inner peace, release from fear, getting help, finding solutions."),
+    create_card_data("Ten of Swords", "Swords", "10", "Painful endings, rock bottom, betrayal.", "Recovery, regeneration, inevitable end, survival."),
+    create_card_data("Page of Swords", "Swords", "Page", "Curiosity, thirst for knowledge, new ideas.", "Unforeseen obstacles, idle talk, verbal abuse, intellectual immaturity."),
+    create_card_data("Knight of Swords", "Swords", "Knight", "Ambitious, action-oriented, fast-thinking.", "Impatience, poor judgement, hasty action, aggression."),
+    create_card_data("Queen of Swords", "Swords", "Queen", "Independent, unbiased judgement, clear boundaries.", "Bitterness, coldness, cruel honesty, emotional distance."),
+    create_card_data("King of Swords", "Swords", "King", "Mental clarity, intellectual power, authority.", "Quiet tyranny, abuse of power, manipulation, emotional detachment."),
+
+    # --- Suit of Pentacles (14 Cards) ---
+    create_card_data("Ace of Pentacles", "Pentacles", "Ace", "New financial opportunity, manifestation.", "Missed opportunity, financial setback, poor investment."),
+    create_card_data("Two of Pentacles", "Pentacles", "2", "Balancing priorities, adaptability, flexibility.", "Imbalance, financial stress, prioritizing incorrectly."),
+    create_card_data("Three of Pentacles", "Pentacles", "3", "Teamwork, collaboration, skilled craft, effort.", "Lack of teamwork, mediocrity, poor quality work, disjointed effort."),
+    create_card_data("Four of Pentacles", "Pentacles", "4", "Security, conservation, possessiveness, control.", "Releasing control, generosity, financial openness, loss of security."),
+    create_card_data("Five of Pentacles", "Pentacles", "5", "Financial loss, poverty, isolation, insecurity.", "Recovery, new job, spiritual poverty, overcoming hardship."),
+    create_card_data("Six of Pentacles", "Pentacles", "6", "Generosity, charity, giving and receiving.", "Debt, stinginess, unfairness, conditional giving."),
+    create_card_data("Seven of Pentacles", "Pentacles", "7", "Patience, investment, long-term vision, profit.", "Lack of patience, poor investment, sudden loss, failure to persevere."),
+    create_card_data("Eight of Pentacles", "Pentacles", "8", "Apprenticeship, skill development, mastery, diligence.", "Perfectionism, monotony, lack of motivation, hasty work."),
+    create_card_data("Nine of Pentacles", "Pentacles", "9", "Abundance, luxury, self-sufficiency, security.", "Loss of financial independence, theft, reckless spending."),
+    create_card_data("Ten of Pentacles", "Pentacles", "10", "Wealth, family legacy, financial security, stability.", "Family conflict, financial failure, instability, inheritance issues."),
+    create_card_data("Page of Pentacles", "Pentacles", "Page", "Manifestation, financial opportunity, skill, focus.", "Lack of follow-through, bad news about money, daydreaming."),
+    create_card_data("Knight of Pentacles", "Pentacles", "Knight", "Hard work, routine, diligence, reliability.", "Sloth, laziness, stagnation, perfectionism to the point of delay."),
+    create_card_data("Queen of Pentacles", "Pentacles", "Queen", "Nurturing, practical, financially stable, domestic.", "Self-centeredness, insecurity, neglecting home or self."),
+    create_card_data("King of Pentacles", "Pentacles", "King", "Wealth, business, leadership, security.", "Greed, corruption, excessive materialism, failure to invest.")
 ]
 
 
-# --- Helper Function to Load Custom CSS ---
+# --- Spread Definitions ---
+SPREAD_DEFINITIONS = {
+    "Three-Card Spread (Past, Present, Future)": {
+        "count": 3,
+        "labels": ["Your Past (Card 1)", "Your Present (Card 2)", "Your Future (Card 3)"]
+    },
+    # Celtic Cross spread definition will be added in the next step
+}
+
+# --- Helper Functions ---
 def load_css(file_name):
     """Loads a CSS file for styling."""
     try:
@@ -118,39 +201,89 @@ def load_css(file_name):
     except FileNotFoundError:
         st.warning(f"{file_name} file not found. App will run with default styling.")
 
+def draw_card_with_orientation():
+    """Picks a card and randomly assigns an upright or reversed orientation."""
+    if st.session_state.deck_remaining:
+        card_data = st.session_state.deck_remaining.pop(0) 
+        
+        is_reversed = random.choice([True, False]) 
+        
+        # Combine data for the drawn card
+        drawn_card = {
+            "name": card_data["name"],
+            "suit": card_data["suit"],
+            "value": card_data["value"],
+            "is_reversed": is_reversed,
+            "meaning": card_data["meaning_reversed"] if is_reversed else card_data["meaning_upright"],
+            "orientation": "Reversed" if is_reversed else "Upright"
+        }
+        return drawn_card
+    return None
+
+def render_card_face(card, width_px="200px", height_px="350px"):
+    """Generates the CSS/HTML to display the stylized card face."""
+    
+    # Map suits to emojis and CSS class for color/border
+    suit_map = {
+        "Major Arcana": ("⭐", "major"),
+        "Wands": ("🔥", "wands"),
+        "Cups": ("💧", "cups"),
+        "Swords": ("⚔️", "swords"),
+        "Pentacles": ("💰", "pentacles")
+    }
+    
+    emoji, css_class = suit_map.get(card["suit"], ("?", "default"))
+    
+    # Apply rotation class if reversed
+    rotation_class = "card-reversed" if card["is_reversed"] else ""
+    
+    html = f"""
+    <div class='generated-card-face {css_class} {rotation_class}' 
+         style='width: {width_px}; height: {height_px};'>
+        <div class='card-title-top'>{card["value"]}</div>
+        <div class='card-name'>{card["name"]}</div>
+        <div class='card-suit-center'>{emoji}</div>
+        <div class='card-title-bottom'>{card["value"]}</div>
+    </div>
+    """
+    st.markdown(html, unsafe_allow_html=True)
+
+
 # --- Session State Management Initialization ---
 if 'reading_active' not in st.session_state:
     st.session_state.reading_active = False
 if 'drawn_cards' not in st.session_state:
     st.session_state.drawn_cards = []
 if 'deck_remaining' not in st.session_state:
-    # Shuffle and store the deck once per session
     shuffled_deck = list(TAROT_DECK)
     random.shuffle(shuffled_deck)
     st.session_state.deck_remaining = shuffled_deck
 if 'pick_count' not in st.session_state:
     st.session_state.pick_count = 0
+if 'selected_spread' not in st.session_state:
+    st.session_state.selected_spread = "Three-Card Spread (Past, Present, Future)"
 
 # --- State Functions ---
 
 def start_reading():
     """Initializes a new reading session."""
-    if st.session_state.name and st.session_state.question:
+    spread_info = SPREAD_DEFINITIONS[st.session_state.selected_spread]
+    
+    if st.session_state.name_input and st.session_state.question_input:
         st.session_state.reading_active = True
         st.session_state.drawn_cards = []
         st.session_state.pick_count = 0
-        # Re-shuffle the deck for a fresh start
         shuffled_deck = list(TAROT_DECK)
         random.shuffle(shuffled_deck)
         st.session_state.deck_remaining = shuffled_deck
+        st.session_state.total_cards = spread_info["count"] 
     else:
         st.warning("Please enter your name and question to begin.")
 
 def pick_card():
-    """Picks the next card from the top of the remaining deck."""
-    if st.session_state.deck_remaining:
-        # Get the next card from the top of the shuffled deck
-        card = st.session_state.deck_remaining.pop(0) 
+    """Picks the next card using the new drawing logic."""
+    card = draw_card_with_orientation()
+    if card:
         st.session_state.drawn_cards.append(card)
         st.session_state.pick_count += 1
     else:
@@ -162,8 +295,31 @@ def reset_reading():
     st.session_state.drawn_cards = []
     st.session_state.deck_remaining = []
     st.session_state.pick_count = 0
-    # Force a full Rerun to clear input fields (FIXED: using st.rerun())
     st.rerun() 
+
+def generate_deep_dive(reading_name, question, cards):
+    """Generates a cohesive interpretation based on the drawn cards."""
+    
+    # Simple, hard-coded synthesis for the 3-card spread (Past, Present, Future)
+    if len(cards) < 3:
+        return 
+
+    past_card = cards[0]
+    present_card = cards[1]
+    future_card = cards[2]
+
+    st.subheader("💡 Deep Dive Reading Insight")
+    st.markdown(f"***{reading_name}, regarding your question: '{question}'***")
+
+    interpretation = (
+        f"Your reading begins with the **{past_card['name']} ({past_card['orientation']})** in the Past position. "
+        f"This suggests a foundation built on: *{past_card['meaning']}*. "
+        f"In your present situation, the **{present_card['name']} ({present_card['orientation']})** indicates a focus on: *{present_card['meaning']}*. "
+        f"This combination of past influences and present energy directs the current flow towards the future, "
+        f"where the **{future_card['name']} ({future_card['orientation']})** suggests a likely outcome of: *{future_card['meaning']}*. "
+        "Focus on the balance of the **{past_card['suit']}**, **{present_card['suit']}**, and **{future_card['suit']}** energies to find your path forward."
+    )
+    st.info(interpretation)
 
 
 # --- Main App Logic ---
@@ -172,73 +328,92 @@ def run_tarot_app():
     st.markdown("---")
     
     # 1. Input Section
-    # Check if inputs are initialized before accessing
-    if 'name' not in st.session_state: st.session_state.name = ""
-    if 'question' not in st.session_state: st.session_state.question = ""
+    col_spread, col_name, col_question = st.columns([1, 1.5, 2])
 
-    st.session_state.name = st.text_input("What is your name?", value=st.session_state.name, key="name_input")
-    st.session_state.question = st.text_input("What question do you ask of the cards?", value=st.session_state.question, key="question_input")
+    with col_spread:
+        st.session_state.selected_spread = st.selectbox(
+            "Select Your Spread",
+            list(SPREAD_DEFINITIONS.keys()),
+            key="spread_select",
+            disabled=st.session_state.reading_active
+        )
+    
+    with col_name:
+        st.text_input("What is your name?", key="name_input")
+    
+    with col_question:
+        st.text_input("What question do you ask of the cards?", key="question_input")
+    
+    current_spread = SPREAD_DEFINITIONS[st.session_state.selected_spread]
     
     # 2. Start Button
-    if st.button("Shuffle and Start Reading", disabled=st.session_state.reading_active, key="start_btn"):
+    if st.button("Shuffle and Start Reading", disabled=st.session_state.reading_active, key="start_btn", use_container_width=True):
         start_reading()
 
     # --- Interactive Reading Flow ---
     if st.session_state.reading_active:
         st.markdown(f"---")
-        st.subheader(f"{st.session_state.name}, let your intuition guide you...")
-        st.markdown(f"**Question:** *{st.session_state.question}*")
+        st.subheader(f"{st.session_state.name_input}, let your intuition guide you...")
+        st.markdown(f"**Question:** *{st.session_state.question_input}*")
         
-        # Check if the reading is complete
-        if st.session_state.pick_count < 3:
-            st.markdown(f"Click the card below to select **Card {st.session_state.pick_count + 1} of 3**.")
+        total_cards = current_spread["count"]
+        card_labels = current_spread["labels"]
         
-        # Card Selection Display (The interactive part)
-        card_labels = ["Your Past (Card 1)", "Your Present (Card 2)", "Your Future (Card 3)"]
+        if st.session_state.pick_count < total_cards:
+            st.markdown(f"Click the card below to select **Card {st.session_state.pick_count + 1} of {total_cards}**.")
         
-        # Display the slots for the three cards
         cols = st.columns(3)
-        for i in range(3):
-            with cols[i]:
-                st.markdown(f"<div class='card-slot'>", unsafe_allow_html=True)
-                
-                if i < st.session_state.pick_count:
-                    # Card has been picked - Show the result
-                    card = st.session_state.drawn_cards[i]
-                    st.markdown(f"<p style='color:#ffd700; font-weight:bold;'>{card_labels[i]}</p>", unsafe_allow_html=True)
-                    st.markdown(f'<div class="card-container">', unsafe_allow_html=True)
-                    # We use a slight delay for visual drama on reveal
-                    time.sleep(0.05) 
-                    st.image(card["image_url"], caption=card["name"], use_column_width=True)
-                    st.markdown(f"**Meaning:** {card['meaning']}")
-                    st.markdown('</div>', unsafe_allow_html=True)
-                
-                elif i == st.session_state.pick_count and st.session_state.pick_count < 3:
-                    # Current card to be picked - Show interactive card back
-                    st.markdown(f"<p style='color:#ffd700; font-weight:bold;'>{card_labels[i]}</p>", unsafe_allow_html=True)
+        for i in range(total_cards):
+            
+            if i < 3: # Logic for 3-card layout
+                with cols[i]:
+                    st.markdown(f"<div class='card-slot'>", unsafe_allow_html=True)
                     
-                    # You MUST have a 'card_back.jpg' image in your GitHub 'images' folder
-                    card_back_url = f"{BASE_URL}/card_back.jpg" 
-                    
-                    # Streamlit trick: Use a button to handle the click action
-                    if st.button(f"Pick Card {i+1}", key="pick-btn-action", use_container_width=True):
-                        pick_card()
-                        st.rerun() # FIXED: using st.rerun() to update the display
+                    if i < st.session_state.pick_count:
+                        # Card has been picked - Show the result
+                        card = st.session_state.drawn_cards[i]
                         
-                    st.image(card_back_url, caption="Click button to reveal", use_column_width=True)
+                        st.markdown(f"<p style='color:#ffd700; font-weight:bold;'>{card_labels[i]}</p>", unsafe_allow_html=True)
+                        st.markdown(f'<div class="card-container">', unsafe_allow_html=True)
+                        
+                        render_card_face(card)
+                        
+                        st.markdown(f"**Orientation:** {card['orientation']}")
+                        st.markdown(f"**Meaning:** {card['meaning']}")
+                        st.markdown('</div>', unsafe_allow_html=True)
+                    
+                    elif i == st.session_state.pick_count:
+                        # Current card to be picked - Show interactive card back
+                        st.markdown(f"<p style='color:#ffd700; font-weight:bold;'>{card_labels[i]}</p>", unsafe_allow_html=True)
+                        
+                        if st.button(f"Pick Card {i+1}", key=f"pick-btn-{i}", use_container_width=True):
+                            pick_card()
+                            st.rerun() 
+                            
+                        # RENDER CARD BACK
+                        st.markdown(f"""
+                        <div class='card-back-placeholder'>
+                            {CARD_BACK_SYMBOL}
+                        </div>
+                        """, unsafe_allow_html=True)
 
-                else:
-                    # Card slot is empty - show placeholder
-                    st.markdown(f"<p style='color:#888;'>{card_labels[i]}</p>", unsafe_allow_html=True)
-                    st.markdown('<div style="height: 350px; border: 1px dashed #444; border-radius: 8px;"></div>', unsafe_allow_html=True)
+                    else:
+                        # Card slot is empty - show placeholder
+                        st.markdown(f"<p style='color:#888;'>{card_labels[i]}</p>", unsafe_allow_html=True)
+                        st.markdown('<div class="empty-card-slot" style="height: 350px; border: 1px dashed #444; border-radius: 8px;"></div>', unsafe_allow_html=True)
 
-                st.markdown("</div>", unsafe_allow_html=True)
+                    st.markdown("</div>", unsafe_allow_html=True)
         
         st.markdown("---")
 
         # 3. Reading Complete Section
-        if st.session_state.pick_count == 3:
-            st.success("✨ Your **3-Card Reading** is Complete! ✨")
+        if st.session_state.pick_count == total_cards:
+            st.success(f"✨ Your **{st.session_state.selected_spread}** is Complete! ✨")
+            generate_deep_dive(
+                st.session_state.name_input, 
+                st.session_state.question_input, 
+                st.session_state.drawn_cards
+            )
             st.markdown("Meditate on the meanings revealed above.")
             if st.button("Start New Reading", key="reset"):
                 reset_reading()
