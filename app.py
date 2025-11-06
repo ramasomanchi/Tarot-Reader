@@ -44,7 +44,7 @@ def load_css(file_name):
     with open(file_name) as f:
         st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
 
-# --- Main App Function (The Gated Content) ---
+# --- Main App Function ---
 def run_tarot_app():
     """The main logic for the Tarot Reader app."""
     
@@ -99,26 +99,6 @@ try:
 except FileNotFoundError:
     st.warning("style.css file not found. App will run with default styling.")
 
-# --- The Paywall / Access Code Logic ---
-def check_password():
-    """Returns True if the password is correct, False otherwise."""
-    
-    # Get the password from the user
-    password_guess = st.text_input("Enter your Access Code", type="password")
-
-    # Check if the password matches the one in Streamlit Secrets
-    # We will set 'APP_PASSWORD' in the Streamlit Cloud settings
-    if password_guess == st.secrets["APP_PASSWORD"]:
-        return True
-    elif password_guess: # If they entered something, but it's wrong
-        st.error("Access code incorrect. Please try again.")
-        return False
-    else: # If the field is empty
-        st.info("Please enter your access code to begin your reading.")
-        st.write("To get an access code, please visit [Your Payment Link](https://ko-fi.com/your-username-here).")
-        return False
-
 # --- Main Execution ---
-if check_password():
-    # If password is correct, run the main app
-    run_tarot_app()
+# Now we call the main app function directly, no password check!
+run_tarot_app()
