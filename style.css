@@ -1,16 +1,12 @@
 /* Import a mystical-looking font from Google Fonts */
 @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap');
 
-/* --- Main App Styling --- */
-body {
-    background-color: #1a1a2e; /* Dark purple/blue background */
-}
-
-/* Base app container */
+/* --- Global Color Override for Visibility --- */
+/* Set the primary background and force light text on the entire app */
 .stApp {
     background: linear-gradient(to bottom, #0f0c29, #302b63, #24243e);
-    color: #e0e0e0; /* Light grey text */
-    font-family: 'Cinzel', serif; /* Apply the mystical font */
+    color: #e0e0e0; /* <-- Explicitly set light text color for visibility */
+    font-family: 'Cinzel', serif;
 }
 
 /* --- Titles and Headers --- */
@@ -20,11 +16,15 @@ h1, h2, h3 {
 }
 
 /* --- Widgets --- */
+.stTextInput label, .stMarkdown {
+    color: #e0e0e0 !important; /* Ensure all labels and markdown text is light */
+}
+
 .stTextInput input {
     border-radius: 8px;
     border: 1px solid #ffd700;
-    color: #ffffff; /* Text color *inside* the input box */
-    background-color: #24243e; /* Dark background for input */
+    color: #ffffff; 
+    background-color: #24243e; 
     font-family: 'Cinzel', serif;
 }
 
@@ -34,11 +34,11 @@ h1, h2, h3 {
 }
 
 .stButton button {
-    background-color: #ffd700; /* Gold button */
-    color: #1a1a2e; /* Dark text on button */
+    background-color: #ffd700; 
+    color: #1a1a2e; 
     font-weight: bold;
     font-family: 'Cinzel', serif;
-    width: 100%; /* Make button span its column */
+    width: 100%; 
     border: none;
     padding: 10px 0;
 }
@@ -47,7 +47,28 @@ h1, h2, h3 {
     box-shadow: 0 0 10px #e6c300;
 }
 
-/* --- Card Animation and Layout --- */
+/* --- Card Selection Interface Styling --- */
+/* Style for the visual deck that users click on */
+.deck-card {
+    cursor: pointer;
+    border: 3px solid #ffd700;
+    border-radius: 12px;
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
+    transition: transform 0.2s, box-shadow 0.2s;
+    background-color: #302b63; /* Card back color */
+    padding: 20px;
+    height: 100%;
+}
+.deck-card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 25px #ffd700;
+}
+.card-slot {
+    min-height: 400px; /* Ensure space for the revealed card */
+    text-align: center;
+}
+
+/* --- Revealed Card Animation and Layout --- */
 @keyframes fadeIn {
     from {
         opacity: 0;
@@ -62,19 +83,16 @@ h1, h2, h3 {
 .card-container {
     padding: 15px;
     border-radius: 10px;
-    background-color: rgba(255, 255, 255, 0.05); /* Faintly visible card bg */
+    background-color: rgba(255, 255, 255, 0.05);
     border: 1px solid #ffd700;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
     height: 100%;
-    text-align: center; /* Center the text inside the card */
-    
-    /* Apply the animation */
+    text-align: center;
     animation: fadeIn 1s ease-out;
 }
 
-/* --- Image Styling --- */
 .stImage img {
     border-radius: 8px;
-    border: 2px solid #ffd700; /* Gold border on images */
+    border: 2px solid #ffd700;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.7);
 }
